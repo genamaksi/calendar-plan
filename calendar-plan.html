@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Календарный план реализации проекта</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020617;
+    --surface: #0f172a;
+    --surface2: #0d1b2e;
+    --border: #1e3a5f;
+    --accent: #2563eb;
+    --accent2: #60a5fa;
+    --green: #34d399;
+    --amber: #f59e0b;
+    --pink: #f472b6;
+    --purple: #c4b5fd;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --dim: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'PT Serif', Georgia, serif; font-size: 13px; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    padding: 28px 36px 20px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .header-label { font-size: 10px; color: var(--dim); letter-spacing: 3px; font-family: 'PT Mono', monospace; margin-bottom: 6px; }
+  .header h1 { font-size: 20px; font-weight: 800; color: #f8fafc; }
+  .header-meta { margin-top: 12px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+  .header-meta b { color: var(--accent2); }
+  .header-meta b.green { color: var(--green); }
+  .header-meta b.amber { color: var(--amber); }
+  .header-meta b.pink { color: var(--pink); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; padding: 14px 36px 0; border-bottom: 1px solid #1e293b; }
+  .tab { background: transparent; color: var(--dim); border: none; cursor: pointer; padding: 8px 18px; border-radius: 6px 6px 0 0; font-weight: 700; font-size: 13px; font-family: 'PT Serif', serif; transition: all .2s; }
+  .tab.active { background: var(--accent); color: #fff; }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* CONTENT */
+  .content { padding: 24px 36px; }
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* TABLES */
+  table { border-collapse: collapse; width: 100%; }
+  th {
+    background: var(--border);
+    color: var(--accent2);
+    font-weight: 700;
+    font-size: 11px;
+    text-align: center;
+    padding: 9px 10px;
+    border: 1px solid #15344f;
+    white-space: nowrap;
+    font-family: 'PT Mono', monospace;
+    letter-spacing: .5px;
+  }
+  td { border: 1px solid #1e293b; padding: 9px 10px; font-size: 12px; vertical-align: top; line-height: 1.55; }
+  tr:nth-child(even) td { background: #0d1b2e; }
+  tr:nth-child(odd) td { background: #0f172a; }
+  tr:hover td { background: #1e293b; }
+
+  .num-cell { text-align: center; color: var(--accent2); font-weight: 700; font-family: 'PT Mono', monospace; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; margin: 0 auto 4px; }
+  .date-cell { text-align: center; font-family: 'PT Mono', monospace; font-size: 11px; }
+  .date-start { color: var(--accent2); font-weight: 700; }
+  .date-end { color: var(--green); font-weight: 700; }
+  .date-dur { color: var(--amber); margin-top: 4px; }
+  .resp { color: var(--purple); }
+  .out { color: #86efac; }
+  .note { color: var(--amber); }
+  .main-name { color: #f1f5f9; font-weight: 600; }
+
+  /* GANTT */
+  .gantt-wrap { overflow-x: auto; background: var(--surface); border-radius: 12px; padding: 12px 0; }
+  .gantt-legend { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; }
+  .legend-box { width: 28px; height: 11px; border-radius: 3px; }
+  .legend-text { color: var(--muted); }
+  .gantt-note { color: var(--pink); font-size: 12px; margin-left: auto; }
+  .gantt-summary { margin-top: 14px; overflow-x: auto; }
+
+  /* PERIODIC */
+  .periodic-header {
+    background: #1e1b4b; border: 1px solid #4338ca; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #a5b4fc;
+  }
+  .periodic-header b { color: #818cf8; }
+  .freq-badge {
+    background: #164e63; color: #67e8f9; padding: 3px 12px;
+    border-radius: 20px; font-size: 11px; font-weight: 700;
+    white-space: nowrap; font-family: 'PT Mono', monospace;
+  }
+  .report-box {
+    margin-top: 24px;
+    background: linear-gradient(135deg, #1e1b4b, #0f172a);
+    border: 2px solid var(--pink); border-radius: 12px; padding: 20px;
+  }
+  .report-box-title { font-size: 13px; color: var(--pink); font-weight: 800; margin-bottom: 12px; }
+  .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; color: #cbd5e1; }
+  .report-grid b { color: var(--accent2); }
+  .report-grid .full { grid-column: 1/-1; }
+  .report-grid .highlight { color: var(--pink); font-weight: 700; }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; color: #111; }
+    .header { background: #1e3a5f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tabs { display: none; }
+    .pane { display: block !important; page-break-before: always; }
+    .pane:first-of-type { page-break-before: avoid; }
+    th { background: #1e3a5f !important; color: #93c5fd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    td { background: #fff !important; color: #111 !important; }
+  }
+
+  /* FOOTER */
+  .footer { padding: 12px 36px; border-top: 1px solid #1e293b; font-size: 11px; color: #334155; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  /* PRINT BTN */
+  .print-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff; border: none; cursor: pointer;
+    padding: 8px 20px; border-radius: 6px; font-weight: 700; font-size: 13px;
+    font-family: 'PT Serif', serif; margin-bottom: 18px; transition: background .2s;
+  }
+  .print-btn:hover { background: #1d4ed8; }
+  .hint { font-size: 12px; color: var(--dim); margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-label">УПРАВЛЕНИЕ ПРОЕКТОМ · CALENDAR MANAGEMENT</div>
+  <h1>КАЛЕНДАРНЫЙ ПЛАН РЕАЛИЗАЦИИ ПРОЕКТА</h1>
+  <div class="header-meta">
+    <span>📅 Старт: <b id="hStart"></b></span>
+    <span>⏱ Финиш: <b class="green" id="hEnd"></b></span>
+    <span>📊 Этапов: <b class="amber">10</b></span>
+    <span>📋 Сегодня: <b id="hToday"></b></span>
+    <span>📣 Ближайший доклад (Пн): <b class="pink" id="hMonday"></b></span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('table',this)">📋 Таблица этапов</button>
+  <button class="tab" onclick="showTab('gantt',this)">📊 Диаграмма Ганта</button>
+  <button class="tab" onclick="showTab('periodic',this)">🔁 Периодические мероприятия</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- TABLE PANE -->
+  <div class="pane active" id="pane-table">
+    <button class="print-btn" onclick="window.print()">🖨️ Распечатать / Сохранить PDF</button>
+    <div class="hint">Файл → Печать → «Сохранить как PDF» для скачивания</div>
+    <div style="overflow-x:auto;">
+    <table id="stageTable">
+      <thead>
+        <tr>
+          <th style="width:36px">№</th>
+          <th style="min-width:200px">Содержание этапа работ</th>
+          <th style="min-width:130px">Сроки выполнения</th>
+          <th style="min-width:150px">Ответственный</th>
+          <th style="min-width:180px">Входные данные</th>
+          <th style="min-width:180px">Выходные данные</th>
+          <th style="min-width:140px">Примечания</th>
+        </tr>
+      </thead>
+      <tbody id="stageTbody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- GANTT PANE -->
+  <div class="pane" id="pane-gantt">
+    <div class="gantt-legend">
+      <div class="legend-item"><div class="legend-box" style="background:#f59e0b"></div><span class="legend-text">Сегодня</span></div>
+      <div class="legend-item"><div class="legend-box" style="background:#166534"></div><span class="legend-text">Завершено</span></div>
+      <div class="legend-item"><div class="legend-box" style="background:#2563eb"></div><span class="legend-text">В работе / план</span></div>
+      <div class="legend-item"><div class="legend-box" style="background:#1e3a5f;border:1px dashed #3b82f6"></div><span class="legend-text">Понедельники (доклад)</span></div>
+      <span class="gantt-note">📣 Обновлять к каждому Пн · Ближ.: <span id="gMonday"></span></span>
+    </div>
+    <div class="gantt-wrap">
+      <svg id="ganttSvg" style="display:block;"></svg>
+    </div>
+    <div class="gantt-summary">
+      <table>
+        <thead>
+          <tr>
+            <th>№</th><th>Этап</th><th>Дата начала</th><th>Дата окончания</th><th>Длит., дн.</th><th>Ответственный</th>
+          </tr>
+        </thead>
+        <tbody id="ganttSummaryTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PERIODIC PANE -->
+  <div class="pane" id="pane-periodic">
+    <div class="periodic-header">
+      <b>📌 Периодические мероприятия</b> — регулярные контрольные события, действующие на протяжении всего срока реализации проекта вне зависимости от стадии работ.
+    </div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px">№</th>
+          <th style="min-width:250px">Содержание мероприятия</th>
+          <th style="min-width:180px">Периодичность</th>
+          <th style="min-width:160px">Ответственный</th>
+          <th style="min-width:180px">Результат / выходной документ</th>
+          <th style="min-width:140px">Примечания</th>
+        </tr>
+      </thead>
+      <tbody id="periodicTbody"></tbody>
+    </table>
+    </div>
+    <div class="report-box">
+      <div class="report-box-title">📣 ЕЖЕНЕДЕЛЬНЫЙ ДОКЛАД РУКОВОДИТЕЛЯ ПРОЕКТА — РЕГЛАМЕНТ</div>
+      <div class="report-grid">
+        <div><b>День:</b> каждый понедельник</div>
+        <div><b>Аудитория:</b> Генеральный директор, ЗГД, Директор по развитию</div>
+        <div><b>Формат:</b> Очное совещание / видеоконференция</div>
+        <div><b>Документы:</b> Протокол совещания, актуальный план-график</div>
+        <div class="full highlight">⚡ Диаграмма Ганта обновляется РП к каждому понедельнику и предоставляется на доклад.</div>
+        <div class="full"><b>Вопросы повестки:</b> статус этапов · факт vs. план · проблемные вопросы · риски · решения за неделю · задачи на следующую неделю</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span id="footerDate"></span>
+  <span id="footerMonday"></span>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const PROJECT_START = new Date("2025-04-14");
+
+const STAGES = [
+  { id:1, name:"Инициация проекта. Утверждение целей и задач", start:0, dur:5, responsible:"Руководитель проекта (РП)", inputs:"Устав проекта, приказ о назначении РП", outputs:"Утверждённый план проекта, приказ о старте", notes:"Стартовое совещание с участием всех руководителей", color:"#2563eb" },
+  { id:2, name:"Формирование рабочей группы и распределение ролей", start:3, dur:7, responsible:"РП, HR-директор", inputs:"Утверждённый план проекта, штатное расписание", outputs:"Приказ о составе рабочей группы, матрица ответственности", notes:"", color:"#7c3aed" },
+  { id:3, name:"Анализ текущего состояния / аудит ресурсов", start:7, dur:10, responsible:"Аналитик проекта, финансовый директор", inputs:"Отчётность, регламенты, данные ERP", outputs:"Аналитический отчёт, карта рисков", notes:"Использовать данные за последние 12 месяцев", color:"#0891b2" },
+  { id:4, name:"Разработка детального технического задания (ТЗ)", start:15, dur:14, responsible:"Технический директор, РП", inputs:"Аналитический отчёт, требования заказчика", outputs:"Утверждённое ТЗ, согласованное со всеми стейкхолдерами", notes:"Согласование с ЗГД", color:"#059669" },
+  { id:5, name:"Закупка / подготовка ресурсов и оборудования", start:25, dur:20, responsible:"Директор по закупкам", inputs:"Утверждённое ТЗ, бюджет проекта", outputs:"Акты приёмки оборудования, складской учёт", notes:"Конкурентные закупки согласно регламенту", color:"#d97706" },
+  { id:6, name:"Разработка / внедрение (основной этап)", start:40, dur:35, responsible:"Технический директор, рабочая группа", inputs:"Ресурсы, ТЗ, план-график", outputs:"Готовый продукт / система, акты выполненных работ", notes:"Еженедельный контроль РП", color:"#dc2626" },
+  { id:7, name:"Тестирование и устранение замечаний", start:72, dur:14, responsible:"Тестировщик / ОТК, РП", inputs:"Готовый продукт, чек-листы", outputs:"Протокол тестирования, перечень замечаний — устранён", notes:"", color:"#be185d" },
+  { id:8, name:"Обучение персонала и подготовка документации", start:80, dur:10, responsible:"HR-директор, технический писатель", inputs:"Готовый продукт, учебные материалы", outputs:"Акты об обучении, инструкции пользователя", notes:"Охват: все пользователи системы", color:"#0f766e" },
+  { id:9, name:"Опытная эксплуатация / пилот", start:88, dur:14, responsible:"РП, технический директор", inputs:"Документация, обученный персонал", outputs:"Протокол опытной эксплуатации, журнал инцидентов", notes:"", color:"#4338ca" },
+  { id:10, name:"Приёмка и закрытие проекта", start:100, dur:7, responsible:"РП, Генеральный директор", inputs:"Все отчёты, протоколы, акты", outputs:"Акт сдачи-приёмки, приказ о закрытии проекта", notes:"Финальный доклад Генеральному директору", color:"#15803d" },
+];
+
+const PERIODIC = [
+  { id:"П1", name:"Доклад РП Генеральному директору, ЗГД, Директору по развитию о ходе проекта, проблемных вопросах, соблюдении установленных сроков по этапам", freq:"1 раз в неделю — каждый понедельник", responsible:"Руководитель проекта", outputs:"Протокол совещания, актуализированный план-график (диаграмма Ганта)", notes:"Диаграмма Ганта обновляется к каждому докладу" },
+  { id:"П2", name:"Оперативная планёрка рабочей группы", freq:"2 раза в неделю — понедельник и четверг", responsible:"РП, руководители подгрупп", outputs:"Задачи на неделю, протокол с поручениями", notes:"" },
+  { id:"П3", name:"Ежемесячный финансовый отчёт по проекту", freq:"1 раз в месяц — последний рабочий день", responsible:"Финансовый директор", outputs:"Отчёт об исполнении бюджета, прогноз", notes:"Предоставляется ЗГД по финансам" },
+  { id:"П4", name:"Контроль рисков и актуализация карты рисков", freq:"1 раз в 2 недели", responsible:"Аналитик проекта, РП", outputs:"Актуализированная карта рисков, меры реагирования", notes:"" },
+];
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function fmt(d) { return d.toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric"}); }
+function fmtS(d) { return d.toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit"}); }
+function nextMonday(from) {
+  const d = new Date(from), day = d.getDay();
+  d.setDate(d.getDate() + (day===1?7:(8-day)%7));
+  return d;
+}
+
+const today = new Date();
+const monday = nextMonday(today);
+const totalDays = Math.max(...STAGES.map(s=>s.start+s.dur)) + 5;
+const projectEnd = addDays(PROJECT_START, totalDays);
+
+// ── HEADER / FOOTER ───────────────────────────────────────────────────────────
+document.getElementById("hStart").textContent = fmt(PROJECT_START);
+document.getElementById("hEnd").textContent = fmt(addDays(PROJECT_START, Math.max(...STAGES.map(s=>s.start+s.dur))));
+document.getElementById("hToday").textContent = fmt(today);
+document.getElementById("hMonday").textContent = fmt(monday);
+document.getElementById("gMonday").textContent = fmt(monday);
+document.getElementById("footerDate").textContent = "Версия актуальна на: " + fmt(today);
+document.getElementById("footerMonday").textContent = "Следующий доклад (Пн): " + fmt(monday) + " | Обновить диаграмму Ганта ✓";
+
+// ── STAGE TABLE ───────────────────────────────────────────────────────────────
+const tbody = document.getElementById("stageTbody");
+STAGES.forEach(s => {
+  const startD = fmt(addDays(PROJECT_START, s.start));
+  const endD   = fmt(addDays(PROJECT_START, s.start+s.dur-1));
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="num-cell">
+      <div class="dot" style="background:${s.color}"></div>${s.id}
+    </td>
+    <td class="main-name">${s.name}</td>
+    <td class="date-cell">
+      <div class="date-start">${startD}</div>
+      <div style="color:#475569;font-size:10px">—</div>
+      <div class="date-end">${endD}</div>
+      <div class="date-dur">${s.dur} дн.</div>
+    </td>
+    <td class="resp">${s.responsible}</td>
+    <td style="color:#94a3b8;font-size:11px">${s.inputs}</td>
+    <td class="out" style="font-size:11px">${s.outputs}</td>
+    <td class="note" style="font-size:11px">${s.notes}</td>`;
+  tbody.appendChild(tr);
+});
+
+// ── PERIODIC TABLE ────────────────────────────────────────────────────────────
+const ptbody = document.getElementById("periodicTbody");
+PERIODIC.forEach((p,i) => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="num-cell" style="color:#f472b6;font-size:18px">🔁</td>
+    <td class="main-name">${p.name}</td>
+    <td style="text-align:center"><span class="freq-badge">${p.freq}</span></td>
+    <td class="resp">${p.responsible}</td>
+    <td class="out" style="font-size:11px">${p.outputs}</td>
+    <td class="note" style="font-size:11px">${p.notes}</td>`;
+  ptbody.appendChild(tr);
+});
+
+// ── GANTT SUMMARY TABLE ───────────────────────────────────────────────────────
+const gtbody = document.getElementById("ganttSummaryTbody");
+STAGES.forEach((s,i) => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="num-cell"><div style="display:flex;align-items:center;gap:6px;justify-content:center"><div style="width:10px;height:10px;border-radius:2px;background:${s.color}"></div>${s.id}</div></td>
+    <td class="main-name" style="font-size:12px">${s.name}</td>
+    <td style="text-align:center;color:#60a5fa;font-size:12px;font-family:'PT Mono',monospace">${fmt(addDays(PROJECT_START,s.start))}</td>
+    <td style="text-align:center;color:#34d399;font-size:12px;font-family:'PT Mono',monospace">${fmt(addDays(PROJECT_START,s.start+s.dur-1))}</td>
+    <td style="text-align:center;color:#f59e0b;font-weight:700;font-family:'PT Mono',monospace">${s.dur}</td>
+    <td style="color:#c4b5fd;font-size:12px">${s.responsible}</td>`;
+  gtbody.appendChild(tr);
+});
+
+// ── GANTT SVG ─────────────────────────────────────────────────────────────────
+(function buildGantt() {
+  const dayW = 8, rowH = 36, labelW = 230, headerH = 56;
+  const todayOff = Math.round((today - PROJECT_START) / 86400000);
+  const svgW = labelW + totalDays * dayW + 40;
+  const svgH = headerH + STAGES.length * rowH + 20;
+  const svg = document.getElementById("ganttSvg");
+  svg.setAttribute("width", svgW);
+  svg.setAttribute("height", svgH);
+  svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+
+  function el(tag, attrs, text) {
+    const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  // Background
+  svg.appendChild(el("rect",{width:svgW,height:svgH,fill:"#0f172a"}));
+
+  // Month separators
+  let cur = new Date(PROJECT_START); cur.setDate(1);
+  while (cur <= projectEnd) {
+    const off = Math.max(0, Math.round((cur - PROJECT_START)/86400000));
+    const x = labelW + off * dayW;
+    svg.appendChild(el("line",{x1:x,y1:0,x2:x,y2:svgH,stroke:"#1e3a5f",strokeWidth:1}));
+    svg.appendChild(el("text",{x:x+4,y:16,fill:"#64748b","font-size":10,"font-weight":600,"font-family":"PT Mono,monospace"},
+      cur.toLocaleDateString("ru-RU",{month:"short",year:"2-digit"}).toUpperCase()));
+    cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+
+  // Monday ticks
+  for (let i=0; i<=totalDays; i++) {
+    const d = addDays(PROJECT_START,i);
+    if (d.getDay()===1) {
+      const x = labelW + i * dayW;
+      svg.appendChild(el("line",{x1:x,y1:headerH-10,x2:x,y2:headerH,stroke:"#1e40af",strokeWidth:1,"stroke-dasharray":"2,2"}));
+      svg.appendChild(el("text",{x:x+1,y:headerH-12,fill:"#1e40af","font-size":8,"font-family":"PT Mono,monospace"},fmtS(d)));
+    }
+  }
+
+  // Header line
+  svg.appendChild(el("line",{x1:0,y1:headerH,x2:svgW,y2:headerH,stroke:"#1e3a5f",strokeWidth:1}));
+
+  // Defs (stripe pattern for done)
+  const defs = el("defs",{});
+  const pat = el("pattern",{id:"stripes",patternUnits:"userSpaceOnUse",width:6,height:6,patternTransform:"rotate(45)"});
+  pat.appendChild(el("line",{x1:0,y1:0,x2:0,y2:6,stroke:"#4ade80",strokeWidth:1.5}));
+  defs.appendChild(pat);
+  svg.appendChild(defs);
+
+  // Rows
+  STAGES.forEach((s,i) => {
+    const y = headerH + i * rowH;
+    const barX = labelW + s.start * dayW;
+    const barW = s.dur * dayW;
+    const isActive = todayOff >= s.start && todayOff <= s.start+s.dur;
+    const isDone   = todayOff > s.start+s.dur;
+
+    svg.appendChild(el("rect",{x:0,y,width:svgW,height:rowH,fill:i%2===0?"#0f172a":"#111827"}));
+    svg.appendChild(el("text",{x:8,y:y+rowH/2+4,fill:isActive?"#f8fafc":"#94a3b8","font-size":11,"font-weight":isActive?700:400,"font-family":"PT Mono,monospace"},
+      `${s.id}. ${s.name.length>28?s.name.slice(0,28)+"…":s.name}`));
+    svg.appendChild(el("rect",{x:barX,y:y+7,width:barW,height:rowH-14,rx:4,fill:"#1e293b"}));
+    svg.appendChild(el("rect",{x:barX,y:y+7,width:barW,height:rowH-14,rx:4,fill:isDone?"#166534":isActive?s.color:s.color+"99",opacity:0.9}));
+    if (isDone) svg.appendChild(el("rect",{x:barX,y:y+7,width:barW,height:rowH-14,rx:4,fill:"url(#stripes)",opacity:0.3}));
+    if (barW>24) svg.appendChild(el("text",{x:barX+barW/2,y:y+rowH/2+4,"text-anchor":"middle",fill:"#f1f5f9","font-size":9,"font-weight":600,"font-family":"PT Mono,monospace"},`${s.dur}д`));
+    svg.appendChild(el("line",{x1:0,y1:y+rowH,x2:svgW,y2:y+rowH,stroke:"#1e293b",strokeWidth:0.5}));
+  });
+
+  // Today line
+  if (todayOff >= 0 && todayOff <= totalDays) {
+    const tx = labelW + todayOff * dayW;
+    svg.appendChild(el("line",{x1:tx,y1:headerH,x2:tx,y2:svgH,stroke:"#f59e0b",strokeWidth:2,"stroke-dasharray":"4,3"}));
+    svg.appendChild(el("rect",{x:tx-22,y:headerH-20,width:44,height:17,rx:4,fill:"#f59e0b"}));
+    svg.appendChild(el("text",{x:tx,y:headerH-8,"text-anchor":"middle",fill:"#000","font-size":9,"font-weight":700,"font-family":"PT Mono,monospace"},"СЕГОДНЯ"));
+  }
+})();
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("pane-"+id).classList.add("active");
+  btn.classList.add("active");
+}
+</script>
+</body>
+</html>
